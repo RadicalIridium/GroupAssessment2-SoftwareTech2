@@ -11,7 +11,7 @@ def draw_text(text, pos):
     txt = FONT.render(text, True, (0, 0, 0))
     screen.blit(txt, pos)
 
-def mainmenu():
+def main_menu():
     screen.fill ((200, 200, 250))
     draw_text("Algorithm Explorer", (WIDTH // 3, 50))
     buttons= {
@@ -51,37 +51,42 @@ def puzzles_module():
 def main():
     running = True
     current_module = None
-    buttons = mainmenu()
+    buttons = main_menu()
+
     while running:
+        
         for event in pygame.event.get():
             if event.type== pygame.QUIT:
                 running= False
             elif event.type== pygame.MOUSEBUTTONDOWN and current_module is None:
-                pos = event.pas
-        for name, rect in buttons.items():
-            if rect.collidepoint(pos):
-                current_module= name
+                pos = event.pos
+                for name, rect in buttons.items():
+                    if rect.collidepoint(pos):
+                        current_module= name
+        
         if current_module is None:
-            buttons= mainmenu()
-    else:
-        if current_module== 'Data Structures':
-            data_structures_module()
-        elif current_module== 'Sorting':
-            sorting_module()
-        elif current_module== 'Graphs':
-            graphs_module()
-        elif current_module== 'Heap':
-            heap_module()
-        elif current_module== 'Puzzles':
-            puzzles_module()
-                
-                
-                
-        # For demo, after module ends return to menu
-        current_module= None
+            buttons= main_menu()
     
-    clock.tick(30)
-pygame.quit()
+        else:
+            if current_module== 'Data Structures':
+                data_structures_module()
+            elif current_module== 'Sorting':
+                sorting_module()
+            elif current_module== 'Graphs':
+                graphs_module()
+            elif current_module== 'Heap':
+                heap_module()
+            elif current_module== 'Puzzles':
+                puzzles_module()
+                
+                
+                
+            # For demo, after module ends return to menu
+            current_module= None
+    
+        clock.tick(30)
+
+    pygame.quit()
 
 if __name__ == "__main__":
     main()
