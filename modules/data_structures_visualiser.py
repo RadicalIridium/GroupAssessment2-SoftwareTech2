@@ -46,12 +46,12 @@ def stack_visualiser(screen, font):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pos()
                     
-                if push_btn.collidepoint(mouse) and falling_item is None:
+                if push_btn.collidepoint(mouse) and falling_item is None and popped_item is None:
                     falling_item = counter
                     fall_y = -100 
                     counter += 1
                     
-                elif pop_btn.collidepoint(mouse) and not stack.is_empty() and popped_item is None:
+                elif pop_btn.collidepoint(mouse) and not stack.is_empty() and popped_item is None and falling_item is None:
                     popped_item = stack.peek()
 
                     popped_y = BASE_Y - (len(stack._data) - 1) * (BLOCK_HEIGHT + 5)
@@ -146,12 +146,12 @@ def queue_visualiser(screen, font):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pos()
                 
-                if enqueue_btn.collidepoint(mouse) and slide_on_item is None:
+                if enqueue_btn.collidepoint(mouse) and slide_on_item is None and slide_off_item is None:
                     slide_on_item = counter
                     slide_on_x = WIDTH
                     counter += 1
                 
-                elif dequeue_btn.collidepoint(mouse) and not queue.is_empty() and slide_off_item is None:
+                elif dequeue_btn.collidepoint(mouse) and not queue.is_empty() and slide_off_item is None and slide_on_item is None:
                     slide_off_item = queue.peek()
                     slide_off_x = START_X_Q 
                 
@@ -166,7 +166,7 @@ def queue_visualiser(screen, font):
                 slide_on_item = None
 
         if slide_off_item is not None:
-            slide_off_x -= 20
+            slide_off_x -= 10
 
             if slide_off_x < - 100:
                 queue.dequeue()
