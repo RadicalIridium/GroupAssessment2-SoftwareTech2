@@ -1,28 +1,45 @@
+import time
+
 import pygame
 import sys
 import random
 from .stack import Stack
 from .queue import Queue 
 from .bst import BinaryTree
+from .linked_list import LinkedList
 
 #Bug Fixing
 print("Correct File, S,Q")
-"""
-To-do
-* Decide Colour and style for all games
-"""
-#linked list numbers placeholder
-numbers = [5, 3, 9, 1, 7, 4]
 
+# Constants and Global Variables
 WIDTH, HEIGHT = 800, 600
 clock = pygame.time.Clock()
-cell_width = WIDTH // len(numbers)
 
 BLOCK_WIDTH, BLOCK_HEIGHT = 200, 40
 START_X = (WIDTH - BLOCK_WIDTH) // 2
 BASE_Y = HEIGHT - BLOCK_HEIGHT - 150
-START_X_Q = 20  # Added so the queue does not start in the middle of the box, but on the left side
+START_X_2 = 20  # Added so the queue does not start in the middle of the box, but on the left side
+NODE_W = 60
+NODE_H = 40
+NODE_GAP = 40
+NODE_Y = 250
+DROP_START_Y = 80 
 
+# Colors
+BACKGROUND_COLOR = (200, 200, 250)
+ITEM_COLOR = (100, 150, 250)
+
+HIGHLIGHT_COLOR_GREEN = (0, 140, 0)
+HIGHLIGHT_COLOR_RED = (255, 0, 0)
+HIGHLIGHT_COLOR_BLUE = (100, 100, 250)
+
+BUTTON_COLOR_GREEN = (0, 140, 0)
+BUTTON_COLOR_RED = (160, 0, 0)
+BUTTON_COLOR_GREY = (100, 100, 100)
+BUTTON_COLOR_BLUE = (0, 90, 120)
+
+TEXT_COLOR_1 = (0, 0, 0)
+TEXT_COLOR_2 = (255, 255, 255)
 
 # Visualiser for the Stack
 def stack_visualiser(screen, font):
@@ -79,24 +96,24 @@ def stack_visualiser(screen, font):
             if popped_y < -100:
                 popped_item = None
 
-        screen.fill((200, 200, 250))
+        screen.fill((BACKGROUND_COLOR))
 
         for i, val in enumerate(stack._data):
             rect = pygame.Rect(START_X,
                                BASE_Y - i * (BLOCK_HEIGHT + 5),
                                BLOCK_WIDTH,
                                BLOCK_HEIGHT)
-            pygame.draw.rect(screen, (100, 150, 250), rect)
+            pygame.draw.rect(screen, (ITEM_COLOR), rect)
 
-            text = font.render(str(val), True, (0, 0, 0))
+            text = font.render(str(val), True, (TEXT_COLOR_1))
             text_rect = text.get_rect(center=rect.center)
             screen.blit(text, text_rect)
             
         if falling_item is not None:
             rect = pygame.Rect(START_X, fall_y, BLOCK_WIDTH, BLOCK_HEIGHT)
-            pygame.draw.rect(screen, (100, 150, 250), rect)
+            pygame.draw.rect(screen, (ITEM_COLOR), rect)
 
-            text = font.render(str(falling_item), True, (0, 0, 0))
+            text = font.render(str(falling_item), True, (TEXT_COLOR_1))
             text_rect = text.get_rect(center=rect.center)
             screen.blit(text, text_rect)
 
@@ -104,7 +121,7 @@ def stack_visualiser(screen, font):
             rect = pygame.Rect(START_X, popped_y, BLOCK_WIDTH, BLOCK_HEIGHT)
             pygame.draw.rect(screen, (255, 0, 0), rect)
 
-            text = font.render(str(popped_item), True, (0, 0, 0))
+            text = font.render(str(popped_item), True, (TEXT_COLOR_1))
             screen.blit(text, text.get_rect(center=rect.center))
 
 
@@ -112,13 +129,13 @@ def stack_visualiser(screen, font):
         pygame.draw.rect(screen, (160, 0, 0), pop_btn)
         pygame.draw.rect(screen, (100, 100, 100), quit_btn)
 
-        screen.blit(font.render("PUSH", True, (255, 255, 255)),
+        screen.blit(font.render("PUSH", True, (TEXT_COLOR_2)),
             (push_btn.x + 20, push_btn.y + 10))
 
-        screen.blit(font.render("POP", True, (255, 255, 255)),
+        screen.blit(font.render("POP", True, (TEXT_COLOR_2)),
             (pop_btn.x + 30, pop_btn.y + 10))
 
-        screen.blit(font.render("QUIT", True, (255, 255, 255)),
+        screen.blit(font.render("QUIT", True, (TEXT_COLOR_2)),
             (quit_btn.x + 25, quit_btn.y + 10))
                 
         
@@ -159,7 +176,7 @@ def queue_visualiser(screen, font):
                 
                 elif dequeue_btn.collidepoint(mouse) and not queue.is_empty() and slide_off_item is None and slide_on_item is None:
                     slide_off_item = queue.peek()
-                    slide_off_x = START_X_Q 
+                    slide_off_x = START_X_2 
                 
                 elif quit_btn.collidepoint(mouse):
                     running = False
@@ -167,7 +184,7 @@ def queue_visualiser(screen, font):
         if slide_on_item is not None:
             slide_on_x -= 15
 
-            if slide_on_x <= START_X_Q + len(queue._data) * (BLOCK_WIDTH + 5):
+            if slide_on_x <= START_X_2 + len(queue._data) * (BLOCK_WIDTH + 5):
                 queue.enqueue(slide_on_item)
                 slide_on_item = None
 
@@ -178,17 +195,17 @@ def queue_visualiser(screen, font):
                 queue.dequeue()
                 slide_off_item = None
 
-        screen.fill((200, 200, 250))
+        screen.fill((BACKGROUND_COLOR))
         for i, val in enumerate(queue._data):
             if slide_off_item is not None and i == 0:
                 continue
 
-            rect = pygame.Rect(START_X_Q + i * (BLOCK_WIDTH + 5),
+            rect = pygame.Rect(START_X_2 + i * (BLOCK_WIDTH + 5),
                                 BASE_Y ,
                                 BLOCK_WIDTH,
                                 BLOCK_HEIGHT)
-            pygame.draw.rect(screen, (100, 150, 250), rect)
-            text = font.render(str(val), True, (0, 0, 0))
+            pygame.draw.rect(screen, (ITEM_COLOR), rect)
+            text = font.render(str(val), True, (TEXT_COLOR_1))
             text_rect = text.get_rect(center=rect.center)
             screen.blit(text, text_rect)
 
@@ -196,50 +213,295 @@ def queue_visualiser(screen, font):
             rect = pygame.Rect(slide_on_x, BASE_Y, BLOCK_WIDTH, BLOCK_HEIGHT)
             pygame.draw.rect(screen, (100, 150, 250), rect)
 
-            text = font.render(str(slide_on_item), True, (0, 0, 0))
+            text = font.render(str(slide_on_item), True, (TEXT_COLOR_1))
             text_rect = text.get_rect(center=rect.center)
             screen.blit(text, text_rect)
 
         if slide_off_item is not None:
             rect = pygame.Rect(slide_off_x, BASE_Y, BLOCK_WIDTH, BLOCK_HEIGHT)
-            pygame.draw.rect(screen, (255, 0, 0), rect)
+            pygame.draw.rect(screen, (HIGHLIGHT_COLOR_RED), rect)
 
-            text = font.render(str(slide_off_item), True, (0, 0, 0))
+            text = font.render(str(slide_off_item), True, (TEXT_COLOR_1))
             screen.blit(text, text.get_rect(center=rect.center))
 
-        pygame.draw.rect(screen, (0, 140, 0), enqueue_btn)
-        pygame.draw.rect(screen, (160, 0, 0), dequeue_btn)
-        pygame.draw.rect(screen, (100, 100, 100), quit_btn)
+        pygame.draw.rect(screen, (BUTTON_COLOR_GREEN), enqueue_btn)
+        pygame.draw.rect(screen, (BUTTON_COLOR_RED), dequeue_btn)
+        pygame.draw.rect(screen, (BUTTON_COLOR_GREY), quit_btn)
 
-        screen.blit(font.render("Enqueue", True, (255, 255, 255)),
+        screen.blit(font.render("Enqueue", True, (TEXT_COLOR_2)),
             (enqueue_btn.x + 20, enqueue_btn.y + 10))
 
-        screen.blit(font.render("Dequeue", True, (255, 255, 255)),
+        screen.blit(font.render("Dequeue", True, (TEXT_COLOR_2)),
             (dequeue_btn.x + 30, dequeue_btn.y + 10))
 
-        screen.blit(font.render("QUIT", True, (255, 255, 255)),
+        screen.blit(font.render("QUIT", True, (TEXT_COLOR_2)),
             (quit_btn.x + 25, quit_btn.y + 10))
         
         pygame.display.flip()
         clock.tick(30)
 
 
-def draw_grid(screen, highlight_index=None):
-    screen.fill((30, 30, 30))
-    for i, num in enumerate(numbers):
-        color = (200, 200, 200)
-        if i == highlight_index:
-            color = (255, 100, 100)
-        rect = pygame.Rect(i * cell_width, 0, cell_width - 2, HEIGHT)
+# Helper function to draw the linked list,
+def draw_linked_list(screen, font, nodes, highlight=None, highlight_colour=HIGHLIGHT_COLOR_GREEN,
+                    delete_highlight=None, drop_val=None, drop_x=None, drop_y=None):
+ 
+    for i, node in enumerate(nodes):
+        if node == delete_highlight:
+            color = HIGHLIGHT_COLOR_RED
+        elif node == highlight:
+            color = highlight_colour
+        else:
+            color = ITEM_COLOR
+ 
+        rect = pygame.Rect(START_X_2 + i * (NODE_W + NODE_GAP), NODE_Y - NODE_H // 2, NODE_W, NODE_H)
         pygame.draw.rect(screen, color, rect)
-        text = FONT.render(str(num), True, (0, 0, 0))
-        text_rect = text.get_rect(center=rect.center)
-        screen.blit(text, text_rect)
+        text = font.render(str(node.value), True, TEXT_COLOR_1)
+        screen.blit(text, text.get_rect(center=rect.center))
+ 
+        # Arrow to next node
+        if i < len(nodes) - 1:
+            next_x = START_X_2 + (i + 1) * (NODE_W + NODE_GAP)
+            pygame.draw.line(screen, TEXT_COLOR_1, (rect.right + 2, NODE_Y), (next_x - 2, NODE_Y), 2)
+            pygame.draw.polygon(screen, TEXT_COLOR_1, [
+                (next_x - 2, NODE_Y),
+                (next_x - 10, NODE_Y - 5),
+                (next_x - 10, NODE_Y + 5),
+            ])
 
+    # NULL label after last node
+    if nodes:
+        null_x    = START_X_2 + len(nodes) * (NODE_W + NODE_GAP)
+        null_rect = pygame.Rect(null_x, NODE_Y - NODE_H // 2, 45, NODE_H)
+        last_rect_right = START_X_2 + (len(nodes) - 1) * (NODE_W + NODE_GAP) + NODE_W
+        pygame.draw.line(screen, TEXT_COLOR_1, (last_rect_right + 2, NODE_Y), (null_x - 2, NODE_Y), 2)
+        pygame.draw.polygon(screen, TEXT_COLOR_1, [
+            (null_x - 2, NODE_Y),
+            (null_x - 10, NODE_Y - 5),
+            (null_x - 10, NODE_Y + 5),
+        ])
+        pygame.draw.rect(screen, BUTTON_COLOR_GREY, null_rect)
+        screen.blit(font.render("NULL", True, TEXT_COLOR_2), (null_rect.x + 2, null_rect.y + 10))
+    else:
+        screen.blit(font.render("(empty)", True, TEXT_COLOR_1), (START_X_2, NODE_Y - 10))
+ 
+    # Dropping node (insert animation)
+    if drop_val is not None:
+        drop_rect = pygame.Rect(drop_x, drop_y - NODE_H // 2, NODE_W, NODE_H)
+        pygame.draw.rect(screen, HIGHLIGHT_COLOR_GREEN, drop_rect)
+        text = font.render(str(drop_val), True, TEXT_COLOR_1)
+        screen.blit(text, text.get_rect(center=drop_rect.center))
 
 # Visualiser for the linked list
 def linked_list_visualiser(screen, font):
-    pass
+    ll = LinkedList()
+    running = True
+ 
+    for v in [10, 20, 30]:
+        ll.insert(v, ll.length())
+ 
+    # Buttons
+    insert_btn  = pygame.Rect(30,  500, 110, 45)
+    delete_btn  = pygame.Rect(150, 500, 110, 45)
+    reverse_btn = pygame.Rect(270, 500, 110, 45)
+    quit_btn    = pygame.Rect(390, 500, 110, 45)
+ 
+    # Input boxes
+    value_box  = pygame.Rect(30,  555, 80, 30)
+    index_box  = pygame.Rect(120, 555, 80, 30)
+    delete_box = pygame.Rect(270, 555, 80, 30)
+ 
+    value_text  = ""
+    index_text  = ""
+    delete_text = ""
+    active_input = None  # "value" | "index" | "delete" | None
+ 
+    # Animation
+    anim_phase = ""   # "insert_traverse"|"insert_drop"|"delete_search"|"delete_remove"|"reverse"
+    anim_timer = 0
+    anim_delay = 18
+ 
+    # Insert
+    ins_val    = None
+    ins_index  = None
+    ins_path   = []
+    ins_path_i = 0
+    ins_drop_y = 0.0
+ 
+    # Delete
+    del_val    = None
+    del_path   = []
+    del_path_i = 0
+    del_node   = None
+    del_hold   = 0
+ 
+    # Reverse
+    rev_steps  = []
+    rev_step_i = 0
+    rev_prev   = None
+    rev_curr   = None
+    rev_next   = None
+ 
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+ 
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse = pygame.mouse.get_pos()
+ 
+                if value_box.collidepoint(mouse):
+                    active_input = "value"
+                elif index_box.collidepoint(mouse):
+                    active_input = "index"
+                elif delete_box.collidepoint(mouse):
+                    active_input = "delete"
+                else:
+                    active_input = None
+ 
+                if anim_phase == "":
+                    if insert_btn.collidepoint(mouse) and value_text.isdigit() and index_text.isdigit():
+                        ins_val    = int(value_text)
+                        ins_index  = int(index_text)
+                        ins_path   = ll.find_insert_traverse_path(ins_index)
+                        ins_path_i = 0
+                        ins_drop_y = 80.0
+                        value_text = ""
+                        index_text = ""
+                        anim_phase = "insert_traverse" if ins_path else "insert_drop"
+ 
+                    elif delete_btn.collidepoint(mouse) and delete_text.isdigit():
+                        del_val     = int(delete_text)
+                        del_path    = ll.find_search_path(del_val)
+                        del_path_i  = 0
+                        del_node    = None
+                        del_hold    = 0
+                        delete_text = ""
+                        anim_phase  = "delete_search"
+ 
+                    elif reverse_btn.collidepoint(mouse) and not ll.length() == 0:
+                        rev_steps  = ll.get_reverse_steps()
+                        rev_step_i = 0
+                        if rev_steps:
+                            rev_prev, rev_curr, rev_next = rev_steps[0]
+                        anim_phase = "reverse"
+ 
+                if quit_btn.collidepoint(mouse):
+                    running = False
+ 
+            elif event.type == pygame.KEYDOWN and active_input:
+                if active_input == "value":
+                    if event.key == pygame.K_BACKSPACE:
+                        value_text = value_text[:-1]
+                    elif event.unicode.isdigit() and len(value_text) < 4:
+                        value_text += event.unicode
+                elif active_input == "index":
+                    if event.key == pygame.K_BACKSPACE:
+                        index_text = index_text[:-1]
+                    elif event.unicode.isdigit() and len(index_text) < 3:
+                        index_text += event.unicode
+                elif active_input == "delete":
+                    if event.key == pygame.K_BACKSPACE:
+                        delete_text = delete_text[:-1]
+                    elif event.unicode.isdigit() and len(delete_text) < 4:
+                        delete_text += event.unicode
+ 
+        # Animation logic
+        highlight        = None
+        highlight_colour = HIGHLIGHT_COLOR_GREEN
+        delete_highlight = None
+        drop_val = drop_x = drop_y = None
+ 
+        anim_timer += 1
+        stepped = anim_timer >= anim_delay
+ 
+        if anim_phase == "insert_traverse":
+            if ins_path_i < len(ins_path):
+                highlight = ins_path[ins_path_i]
+            if stepped:
+                anim_timer = 0
+                ins_path_i += 1
+                if ins_path_i >= len(ins_path):
+                    anim_phase = "insert_drop"
+ 
+        elif anim_phase == "insert_drop":
+            ins_drop_y += 8
+            drop_val   = ins_val
+            drop_x     = START_X_2 + min(ins_index, ll.length()) * (NODE_W + NODE_GAP)
+            drop_y     = int(ins_drop_y)
+            if ins_drop_y >= NODE_Y:
+                ll.insert(ins_val, ins_index)
+                anim_phase = ""
+                anim_timer = 0
+ 
+        elif anim_phase == "delete_search":
+            if del_path_i < len(del_path):
+                highlight = del_path[del_path_i]
+            if stepped:
+                anim_timer = 0
+                del_path_i += 1
+                if del_path_i >= len(del_path):
+                    del_node   = ll.find_by_value(del_val)
+                    anim_phase = "delete_remove" if del_node else ""
+ 
+        elif anim_phase == "delete_remove":
+            delete_highlight = del_node
+            del_hold += 1
+            if del_hold >= 40:
+                ll.delete_by_value(del_val)
+                del_node   = None
+                del_hold   = 0
+                anim_phase = ""
+                anim_timer = 0
+ 
+        elif anim_phase == "reverse":
+            # green=prev, blue=next, red=curr (reusing delete_highlight for red)
+            highlight        = rev_prev
+            highlight_colour = HIGHLIGHT_COLOR_GREEN
+            delete_highlight = rev_curr
+            if rev_next:
+                # draw next in blue by temporarily overriding — handled in draw via second highlight
+                pass
+            if stepped:
+                anim_timer = 0
+                rev_step_i += 1
+                if rev_step_i < len(rev_steps):
+                    rev_prev, rev_curr, rev_next = rev_steps[rev_step_i]
+                else:
+                    ll.reverse()
+                    anim_phase = ""
+ 
+        # Render
+        screen.fill(BACKGROUND_COLOR)
+ 
+        draw_linked_list(screen, font, ll.to_nodes(),
+                         highlight=highlight,
+                         highlight_colour=highlight_colour,
+                         delete_highlight=delete_highlight,
+                         drop_val=drop_val, drop_x=drop_x, drop_y=drop_y)
+ 
+        pygame.draw.rect(screen, BUTTON_COLOR_GREEN, insert_btn)
+        pygame.draw.rect(screen, BUTTON_COLOR_RED,   delete_btn)
+        pygame.draw.rect(screen, BUTTON_COLOR_BLUE,  reverse_btn)
+        pygame.draw.rect(screen, BUTTON_COLOR_GREY,  quit_btn)
+ 
+        screen.blit(font.render("Insert",  True, TEXT_COLOR_2), (insert_btn.x  + 20, insert_btn.y  + 10))
+        screen.blit(font.render("Delete",  True, TEXT_COLOR_2), (delete_btn.x  + 20, delete_btn.y  + 10))
+        screen.blit(font.render("Reverse", True, TEXT_COLOR_2), (reverse_btn.x + 10, reverse_btn.y + 10))
+        screen.blit(font.render("QUIT",    True, TEXT_COLOR_2), (quit_btn.x    + 25, quit_btn.y    + 10))
+ 
+        for box, text, label, key in [
+            (value_box,  value_text,  "Value",   "value"),
+            (index_box,  index_text,  "Index",   "index"),
+            (delete_box, delete_text, "Del val", "delete"),
+        ]:
+            pygame.draw.rect(screen, (255, 255, 255) if active_input == key else (180, 180, 180), box)
+            screen.blit(font.render(text,  True, TEXT_COLOR_1), (box.x + 5, box.y + 8))
+            screen.blit(font.render(label, True, TEXT_COLOR_1), (box.x, box.y - 16))
+ 
+        pygame.display.flip()
+        clock.tick(30)
+
 
 
 # part of the BST visualiser, to draw the tree structure
@@ -256,7 +518,7 @@ def draw_tree(screen, node, x, y, spacing, font, highlight=None, highlight_colou
 
     # Draw node
     pygame.draw.circle(screen, color, (x, y), 25)
-    text = font.render(str(node.value), True, (0, 0, 0))
+    text = font.render(str(node.value), True, (TEXT_COLOR_1))
     screen.blit(text, text.get_rect(center=(x, y)))
 
     # Left child
@@ -415,35 +677,35 @@ def bst_visualiser(screen, font):
                 delete_timer = 0
         
 
-        screen.fill((200, 200, 250))
+        screen.fill((BACKGROUND_COLOR))
 
         active_highlight = traversal_current if traversal_active else current
-        highlight_colour = (100, 100, 250) if traversal_active else (0, 140, 0)
+        highlight_colour = (ITEM_COLOR) if traversal_active else (0, 140, 0)
         draw_tree(screen, tree.root, WIDTH // 2, 80, 200, font, active_highlight, highlight_colour,
                   tree.search(delete_target) if delete_target else None)
 
-        pygame.draw.rect(screen, (0, 140, 0), insert_btn)
-        pygame.draw.rect(screen, (160, 0, 0), delete_btn)
-        pygame.draw.rect(screen, (100, 100, 100), quit_btn)
+        pygame.draw.rect(screen, (BUTTON_COLOR_GREEN), insert_btn)
+        pygame.draw.rect(screen, (BUTTON_COLOR_RED), delete_btn)
+        pygame.draw.rect(screen, (BUTTON_COLOR_GREY), quit_btn)
 
-        pygame.draw.rect(screen, (0, 90, 120), inorder_btn)
-        pygame.draw.rect(screen, (0, 90, 120), preorder_btn)
-        pygame.draw.rect(screen, (0, 90, 120), postorder_btn)
+        pygame.draw.rect(screen, (BUTTON_COLOR_BLUE), inorder_btn)
+        pygame.draw.rect(screen, (BUTTON_COLOR_BLUE), preorder_btn)
+        pygame.draw.rect(screen, (BUTTON_COLOR_BLUE), postorder_btn)
 
-        screen.blit(font.render("Insert", True, (255, 255, 255)),
+        screen.blit(font.render("Insert", True, (TEXT_COLOR_2)),
                     (insert_btn.x + 20, insert_btn.y + 10))
 
-        screen.blit(font.render("Delete", True, (255, 255, 255)),
+        screen.blit(font.render("Delete", True, (TEXT_COLOR_2)),
                     (delete_btn.x + 20, delete_btn.y + 10))
 
-        screen.blit(font.render("QUIT", True, (255, 255, 255)),
+        screen.blit(font.render("QUIT", True, (TEXT_COLOR_2)),
                     (quit_btn.x + 25, quit_btn.y + 10))
         
-        screen.blit(font.render("In", True, (255, 255, 255)),
+        screen.blit(font.render("In", True, (TEXT_COLOR_2)),
                     (inorder_btn.x + 20, inorder_btn.y + 10))
-        screen.blit(font.render("Pre", True, (255, 255, 255)),
+        screen.blit(font.render("Pre", True, (TEXT_COLOR_2)),
                     (preorder_btn.x + 20, preorder_btn.y + 10))
-        screen.blit(font.render("Post", True, (255, 255, 255)),
+        screen.blit(font.render("Post", True, (TEXT_COLOR_2)),
                     (postorder_btn.x + 20, postorder_btn.y + 10))
         
         input_colour = (255, 255, 255) if input_active else (180, 180, 180)
@@ -461,7 +723,7 @@ def run(screen):
     menu_items = [
     "Stack Visualization (press enter)", #Unfinished
     "Queue Visualization (press enter)", #Unfinished
-    "Linked List Visualization (not implemented)",
+    "Linked List Visualization (press enter)", #Unfinished
     "BST Visualization (press enter)", #Unfinished
     "Back"
     ]
