@@ -216,5 +216,3 @@ class BinaryTree:
 
         path.append(None)
         return path
-        
-

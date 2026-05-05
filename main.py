@@ -4,6 +4,8 @@ import sys
 pygame.init()
 
 from modules import data_structures_visualiser
+from modules import graph_explore
+from modules import sorting
 
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -53,6 +55,12 @@ def main():
                                 running = False
                             elif name == "Data Structures":
                                 current_module = name
+                            
+                            elif name == "Graphs":
+                                current_module = name
+                            
+                            elif name == "Sorting":
+                                current_module = name
                             else:
                             # Future modules here
                                 pass
@@ -60,6 +68,11 @@ def main():
                 try:
                     if current_module == "Data Structures":
                         data_structures_visualiser.run(screen)
+                    elif current_module == "Graphs":
+                        graph_explore.run(screen)
+                    elif current_module == "Sorting":
+                        sorting.run(screen)
+                        
                     # add other modules here as needed
                 except SystemExit:
                     running = False
