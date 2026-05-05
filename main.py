@@ -6,6 +6,7 @@ pygame.init()
 from modules import data_structures_visualiser
 from modules import graph_explore
 from modules import sorting
+from modules import puzzle_game
 
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -26,7 +27,8 @@ def main_menu():
         'Data Structures': pygame.Rect(300, 150, 200, 50),
         'Sorting': pygame.Rect(300, 230, 200, 50),
         'Graphs': pygame.Rect(300, 310, 200, 50),
-        'Exit': pygame.Rect(300, 390, 200, 50),
+        'Puzzle Games': pygame.Rect(300, 390, 200, 50),
+        'Exit': pygame.Rect(300, 470, 200, 50),
     }
 
     for text, rect in buttons.items():
@@ -61,6 +63,9 @@ def main():
                             
                             elif name == "Sorting":
                                 current_module = name
+                            
+                            elif name == "Puzzle Games":
+                                current_module = name
                             else:
                             # Future modules here
                                 pass
@@ -72,7 +77,9 @@ def main():
                         graph_explore.run(screen)
                     elif current_module == "Sorting":
                         sorting.run(screen)
-                        
+                    elif current_module == "Puzzle Games":
+                        puzzle_game.run(screen)
+
                     # add other modules here as needed
                 except SystemExit:
                     running = False
