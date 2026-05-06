@@ -300,46 +300,46 @@ def linked_list_visualiser(screen, font):
         ll.insert(v, ll.length())
  
     # Buttons
-    insert_btn  = pygame.Rect(30,  500, 110, 45)
-    delete_btn  = pygame.Rect(150, 500, 110, 45)
+    insert_btn = pygame.Rect(30,  500, 110, 45)
+    delete_btn = pygame.Rect(150, 500, 110, 45)
     reverse_btn = pygame.Rect(270, 500, 110, 45)
-    quit_btn    = pygame.Rect(390, 500, 110, 45)
+    quit_btn = pygame.Rect(390, 500, 110, 45)
  
     # Input boxes
-    value_box  = pygame.Rect(30,  555, 80, 30)
-    index_box  = pygame.Rect(120, 555, 80, 30)
+    value_box = pygame.Rect(30,  555, 80, 30)
+    index_box = pygame.Rect(120, 555, 80, 30)
     delete_box = pygame.Rect(270, 555, 80, 30)
  
-    value_text  = ""
-    index_text  = ""
+    value_text = ""
+    index_text = ""
     delete_text = ""
-    active_input = None  # "value" | "index" | "delete" | None
+    active_input = None  
  
     # Animation
-    anim_phase = ""   # "insert_traverse"|"insert_drop"|"delete_search"|"delete_remove"|"reverse"
+    anim_phase = ""   
     anim_timer = 0
     anim_delay = 18
  
     # Insert
-    ins_val    = None
-    ins_index  = None
-    ins_path   = []
+    ins_val = None
+    ins_index = None
+    ins_path = []
     ins_path_i = 0
     ins_drop_y = 0.0
  
     # Delete
-    del_val    = None
-    del_path   = []
+    del_val = None
+    del_path = []
     del_path_i = 0
-    del_node   = None
-    del_hold   = 0
+    del_node = None
+    del_hold = 0
  
     # Reverse
-    rev_steps  = []
+    rev_steps = []
     rev_step_i = 0
-    rev_prev   = None
-    rev_curr   = None
-    rev_next   = None
+    rev_prev = None
+    rev_curr = None
+    rev_next = None
  
     while running:
         for event in pygame.event.get():
@@ -361,9 +361,9 @@ def linked_list_visualiser(screen, font):
  
                 if anim_phase == "":
                     if insert_btn.collidepoint(mouse) and value_text.isdigit() and index_text.isdigit():
-                        ins_val    = int(value_text)
-                        ins_index  = int(index_text)
-                        ins_path   = ll.find_insert_traverse_path(ins_index)
+                        ins_val = int(value_text)
+                        ins_index = int(index_text)
+                        ins_path = ll.find_insert_traverse_path(ins_index)
                         ins_path_i = 0
                         ins_drop_y = 80.0
                         value_text = ""
@@ -371,16 +371,16 @@ def linked_list_visualiser(screen, font):
                         anim_phase = "insert_traverse" if ins_path else "insert_drop"
  
                     elif delete_btn.collidepoint(mouse) and delete_text.isdigit():
-                        del_val     = int(delete_text)
-                        del_path    = ll.find_search_path(del_val)
-                        del_path_i  = 0
-                        del_node    = None
-                        del_hold    = 0
+                        del_val = int(delete_text)
+                        del_path = ll.find_search_path(del_val)
+                        del_path_i = 0
+                        del_node = None
+                        del_hold = 0
                         delete_text = ""
                         anim_phase  = "delete_search"
  
                     elif reverse_btn.collidepoint(mouse) and not ll.length() == 0:
-                        rev_steps  = ll.get_reverse_steps()
+                        rev_steps = ll.get_reverse_steps()
                         rev_step_i = 0
                         if rev_steps:
                             rev_prev, rev_curr, rev_next = rev_steps[0]
@@ -407,7 +407,7 @@ def linked_list_visualiser(screen, font):
                         delete_text += event.unicode
  
         # Animation logic
-        highlight        = None
+        highlight = None
         highlight_colour = HIGHLIGHT_COLOR_GREEN
         delete_highlight = None
         drop_val = drop_x = drop_y = None
@@ -426,9 +426,9 @@ def linked_list_visualiser(screen, font):
  
         elif anim_phase == "insert_drop":
             ins_drop_y += 8
-            drop_val   = ins_val
-            drop_x     = START_X_2 + min(ins_index, ll.length()) * (NODE_W + NODE_GAP)
-            drop_y     = int(ins_drop_y)
+            drop_val = ins_val
+            drop_x = START_X_2 + min(ins_index, ll.length()) * (NODE_W + NODE_GAP)
+            drop_y = int(ins_drop_y)
             if ins_drop_y >= NODE_Y:
                 ll.insert(ins_val, ins_index)
                 anim_phase = ""
@@ -449,18 +449,16 @@ def linked_list_visualiser(screen, font):
             del_hold += 1
             if del_hold >= 40:
                 ll.delete_by_value(del_val)
-                del_node   = None
-                del_hold   = 0
+                del_node = None
+                del_hold = 0
                 anim_phase = ""
                 anim_timer = 0
  
         elif anim_phase == "reverse":
-            # green=prev, blue=next, red=curr (reusing delete_highlight for red)
-            highlight        = rev_prev
+            highlight = rev_prev
             highlight_colour = HIGHLIGHT_COLOR_GREEN
             delete_highlight = rev_curr
             if rev_next:
-                # draw next in blue by temporarily overriding — handled in draw via second highlight
                 pass
             if stepped:
                 anim_timer = 0
@@ -471,7 +469,6 @@ def linked_list_visualiser(screen, font):
                     ll.reverse()
                     anim_phase = ""
  
-        # Render
         screen.fill(BACKGROUND_COLOR)
  
         draw_linked_list(screen, font, ll.to_nodes(),
@@ -721,10 +718,10 @@ def run(screen):
     font = pygame.font.SysFont(None, 28)
     
     menu_items = [
-    "Stack Visualization (press enter)", #Unfinished
-    "Queue Visualization (press enter)", #Unfinished
-    "Linked List Visualization (press enter)", #Unfinished
-    "BST Visualization (press enter)", #Unfinished
+    "Stack Visualization (press enter)", 
+    "Queue Visualization (press enter)", #Smaller boxes?
+    "Linked List Visualization (press enter)", 
+    "BST Visualization (press enter)", #in, pre, post order buttons not working, type input box? 
     "Back"
     ]
 

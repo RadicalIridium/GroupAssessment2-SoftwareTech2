@@ -2,7 +2,6 @@
 Module, created with assitance of W6 tutorial work, Online resources, and AI assistance for Animation utility functions.
 """
 
-
 class Node:
     def __init__(self, val):
         self.value = val
