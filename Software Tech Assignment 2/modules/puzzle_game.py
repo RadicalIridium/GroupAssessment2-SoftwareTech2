@@ -2,7 +2,7 @@ import pygame
 import random
 import sys
 import heapq
-
+from modules import priority_queue
 
 pygame.init()
 
@@ -428,8 +428,7 @@ def run(screen):
                     if choice == "Pathfinding Puzzle Visualisation (press enter)":
                         pathfinding_visualise(screen, font)
                     elif choice == "Event Queue Simulator Visualisation (press enter)":
-                        #event_queue_visualiser(screen, font)
-                        pass
+                        priority_queue.main()
                     elif choice == "Dynamic Programming Puzzle Visualisation (press enter)":
                         dynamic_programming_visualiser(screen, font)
                         pass

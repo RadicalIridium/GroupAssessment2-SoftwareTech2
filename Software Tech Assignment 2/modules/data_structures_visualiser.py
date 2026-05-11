@@ -1,3 +1,4 @@
+
 import time
 
 import pygame
@@ -184,7 +185,7 @@ def queue_visualiser(screen, font):
         if slide_on_item is not None:
             slide_on_x -= 15
 
-            if slide_on_x <= START_X_2 + len(queue._data) * (BLOCK_WIDTH + 5):
+            if slide_on_x <= START_X_2 + len(queue._data) * (BLOCK_WIDTH//2 + 5):
                 queue.enqueue(slide_on_item)
                 slide_on_item = None
 
@@ -200,9 +201,9 @@ def queue_visualiser(screen, font):
             if slide_off_item is not None and i == 0:
                 continue
 
-            rect = pygame.Rect(START_X_2 + i * (BLOCK_WIDTH + 5),
+            rect = pygame.Rect(START_X_2 + i * (BLOCK_WIDTH//2 + 5),
                                 BASE_Y ,
-                                BLOCK_WIDTH,
+                                BLOCK_WIDTH//2,
                                 BLOCK_HEIGHT)
             pygame.draw.rect(screen, (ITEM_COLOR), rect)
             text = font.render(str(val), True, (TEXT_COLOR_1))
@@ -210,7 +211,7 @@ def queue_visualiser(screen, font):
             screen.blit(text, text_rect)
 
         if slide_on_item is not None:
-            rect = pygame.Rect(slide_on_x, BASE_Y, BLOCK_WIDTH, BLOCK_HEIGHT)
+            rect = pygame.Rect(slide_on_x, BASE_Y, BLOCK_WIDTH//2, BLOCK_HEIGHT)
             pygame.draw.rect(screen, (100, 150, 250), rect)
 
             text = font.render(str(slide_on_item), True, (TEXT_COLOR_1))
@@ -218,7 +219,7 @@ def queue_visualiser(screen, font):
             screen.blit(text, text_rect)
 
         if slide_off_item is not None:
-            rect = pygame.Rect(slide_off_x, BASE_Y, BLOCK_WIDTH, BLOCK_HEIGHT)
+            rect = pygame.Rect(slide_off_x, BASE_Y, BLOCK_WIDTH//2, BLOCK_HEIGHT)
             pygame.draw.rect(screen, (HIGHLIGHT_COLOR_RED), rect)
 
             text = font.render(str(slide_off_item), True, (TEXT_COLOR_1))
@@ -313,7 +314,7 @@ def linked_list_visualiser(screen, font):
     value_text = ""
     index_text = ""
     delete_text = ""
-    active_input = None  
+    active_input = None
  
     # Animation
     anim_phase = ""   
@@ -335,7 +336,7 @@ def linked_list_visualiser(screen, font):
     del_hold = 0
  
     # Reverse
-    rev_steps = []
+    rev_steps  = []
     rev_step_i = 0
     rev_prev = None
     rev_curr = None
@@ -377,7 +378,7 @@ def linked_list_visualiser(screen, font):
                         del_node = None
                         del_hold = 0
                         delete_text = ""
-                        anim_phase  = "delete_search"
+                        anim_phase = "delete_search"
  
                     elif reverse_btn.collidepoint(mouse) and not ll.length() == 0:
                         rev_steps = ll.get_reverse_steps()
@@ -406,7 +407,6 @@ def linked_list_visualiser(screen, font):
                     elif event.unicode.isdigit() and len(delete_text) < 4:
                         delete_text += event.unicode
  
-        # Animation logic
         highlight = None
         highlight_colour = HIGHLIGHT_COLOR_GREEN
         delete_highlight = None
@@ -441,7 +441,7 @@ def linked_list_visualiser(screen, font):
                 anim_timer = 0
                 del_path_i += 1
                 if del_path_i >= len(del_path):
-                    del_node   = ll.find_by_value(del_val)
+                    del_node = ll.find_by_value(del_val)
                     anim_phase = "delete_remove" if del_node else ""
  
         elif anim_phase == "delete_remove":
@@ -482,14 +482,14 @@ def linked_list_visualiser(screen, font):
         pygame.draw.rect(screen, BUTTON_COLOR_BLUE,  reverse_btn)
         pygame.draw.rect(screen, BUTTON_COLOR_GREY,  quit_btn)
  
-        screen.blit(font.render("Insert",  True, TEXT_COLOR_2), (insert_btn.x  + 20, insert_btn.y  + 10))
-        screen.blit(font.render("Delete",  True, TEXT_COLOR_2), (delete_btn.x  + 20, delete_btn.y  + 10))
+        screen.blit(font.render("Insert", True, TEXT_COLOR_2), (insert_btn.x + 20, insert_btn.y + 10))
+        screen.blit(font.render("Delete", True, TEXT_COLOR_2), (delete_btn.x + 20, delete_btn.y + 10))
         screen.blit(font.render("Reverse", True, TEXT_COLOR_2), (reverse_btn.x + 10, reverse_btn.y + 10))
-        screen.blit(font.render("QUIT",    True, TEXT_COLOR_2), (quit_btn.x    + 25, quit_btn.y    + 10))
+        screen.blit(font.render("QUIT", True, TEXT_COLOR_2), (quit_btn.x    + 25, quit_btn.y + 10))
  
         for box, text, label, key in [
-            (value_box,  value_text,  "Value",   "value"),
-            (index_box,  index_text,  "Index",   "index"),
+            (value_box,  value_text, "Value", "value"),
+            (index_box,  index_text, "Index", "index"),
             (delete_box, delete_text, "Del val", "delete"),
         ]:
             pygame.draw.rect(screen, (255, 255, 255) if active_input == key else (180, 180, 180), box)
@@ -589,7 +589,11 @@ def bst_visualiser(screen, font):
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pos()
-
+                if input_box.collidepoint(mouse):
+                    input_active = True
+                elif not any([insert_btn.collidepoint(mouse), delete_btn.collidepoint(mouse), quit_btn.collidepoint(mouse), inorder_btn.collidepoint(mouse), preorder_btn.collidepoint(mouse), postorder_btn.collidepoint(mouse)]):
+                    input_active = False    
+                
                 if insert_btn.collidepoint(mouse) and not animating:
                     pending_insert = random.randint(1, 100)
                     highlight_path = tree.find_insert_path(pending_insert)
@@ -623,10 +627,6 @@ def bst_visualiser(screen, font):
                     traversal_current = traversal_path[0] if traversal_path else None
                     traversal_active = True
                 
-                elif input_box.collidepoint(mouse):
-                    input_active = True
-                else:
-                    input_active = False
 
             elif event.type == pygame.KEYDOWN and input_active:
                 if event.key == pygame.K_RETURN and input_text:
@@ -677,7 +677,7 @@ def bst_visualiser(screen, font):
         screen.fill((BACKGROUND_COLOR))
 
         active_highlight = traversal_current if traversal_active else current
-        highlight_colour = (ITEM_COLOR) if traversal_active else (0, 140, 0)
+        highlight_colour = (HIGHLIGHT_COLOR_BLUE) if traversal_active else (0, 140, 0)
         draw_tree(screen, tree.root, WIDTH // 2, 80, 200, font, active_highlight, highlight_colour,
                   tree.search(delete_target) if delete_target else None)
 
@@ -718,10 +718,10 @@ def run(screen):
     font = pygame.font.SysFont(None, 28)
     
     menu_items = [
-    "Stack Visualization (press enter)", 
-    "Queue Visualization (press enter)", #Smaller boxes?
-    "Linked List Visualization (press enter)", 
-    "BST Visualization (press enter)", #in, pre, post order buttons not working, type input box? 
+    "Stack Visualization (press enter)", #Unfinished
+    "Queue Visualization (press enter)", #Unfinished
+    "Linked List Visualization (press enter)", #Unfinished
+    "BST Visualization (press enter)", #Unfinished
     "Back"
     ]
 
