@@ -67,7 +67,7 @@ def dijkstra(start, end):
 
             if (r, c) not in dist or new_cost < dist[(r, c)]:
                 # found a cheaper way to reach this cell
-                dist[(r, c)]      = new_cost
+                dist[(r, c)] = new_cost
                 prev[(r, c)] = (row, col)
                 heapq.heappush(queue, (new_cost, r, c))
 
@@ -266,7 +266,7 @@ def dynamic_programming_visualiser(screen, font):
         for col in range(GRID_SIZE):
             fill_order.append((row, col))
     
-    path        = []
+    path = []
     dp_computed = False   
     
     running = True
